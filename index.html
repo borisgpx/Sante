@@ -4,49 +4,117 @@
     <meta charset="UTF-8">
     <title>Analyseur 3D Pro</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; margin: 0; display: flex; justify-content: center; height: 100vh; }
+        .app-container { display: flex; width: 100%; max-width: 1200px; background: #252525; }
+        
+        /* Panneau de texte à gauche */
+        .content-panel { flex: 1; padding: 30px; border-right: 1px solid #444; overflow-y: auto; z-index: 10; }
+        
+        /* Modèle 3D à droite */
+        model-viewer { flex: 2; background: radial-gradient(#444, #1a1a1a); width: 100%; height: 100%; }
+
+        /* Style des points rouges - On les agrandit pour faciliter le clic */
+        .hotspot {
+            width: 25px; height: 25px;
+            border-radius: 50%; border: 3px solid white;
+            background-color: #ff4757;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 1);
+            padding: 0;
+        }
+
+        button.opt-btn { 
+            background: #3d3d3d; color: white; border: 1px solid #555;
+            padding: 15px; width: 100%; margin: 10px 0; border-radius: 10px; cursor: pointer; text-align: left;
+        }
+        button.opt-btn:hover { background: #505050; border-color: #007bff; }
+        .result-box { background: #1e3a2f; padding: 20px; border-radius: 10px; border-left: 5px solid #2ed573; margin-top: 20px; }
+    </style>
 </head>
 <body>
+
     <div class="app-container">
         <div class="content-panel">
-            <div id="intro"><h3>Cliquez sur un point rouge sur le modèle</h3></div>
+            <div id="intro">
+                <h2>Assistant Médical 3D</h2>
+                <p>Faites pivoter le modèle et cliquez sur les points rouges pour commencer l'analyse.</p>
+            </div>
+            
             <div id="question-card" style="display:none">
-                <h2 id="part-title"></h2>
+                <h2 id="part-title" style="color: #007bff;"></h2>
                 <div id="options"></div>
             </div>
+            
             <div id="result" class="result-box" style="display:none"></div>
         </div>
 
         <model-viewer id="model" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
-            camera-controls auto-rotate shadow-intensity="1" 
-            exposure="1" interaction-prompt="none">
+            camera-controls auto-rotate shadow-intensity="1" exposure="1">
             
-            <button class="hotspot" slot="hotspot-cervicales" data-id="cervicales" data-position="0m 1.75m 0.1m" data-normal="0m 0m 1m"></button>
+            <button class="hotspot" slot="hotspot-cerv" data-id="cervicales" data-position="0m 1.75m 0.1m" data-normal="0m 0m 1m"></button>
             <button class="hotspot" slot="hotspot-dos" data-id="dos" data-position="0m 1.2m -0.2m" data-normal="0m 0m -1m"></button>
             <button class="hotspot" slot="hotspot-genou" data-id="genou" data-position="0.15m 0.5m 0.15m" data-normal="0m 0m 1m"></button>
         </model-viewer>
     </div>
 
     <script>
-        // Ce script gère le clic et l'arrêt de la rotation
+        const data = {
+            cervicales: {
+                nom: "Cou (Cervicales)",
+                choix: [
+                    { t: "Douleur liée à l'usure", r: "Possible Arthrose ou Entorse cervicale." },
+                    { t: "Torticolis", r: "Possible Contracture des Trapèzes." }
+                ]
+            },
+            dos: {
+                nom: "Dos (Lombaires)",
+                choix: [
+                    { t: "Douleur vive (Lumbago)", r: "Évoque un Tour de rein ou hernie." }
+                ]
+            },
+            genou: {
+                nom: "Genou",
+                choix: [
+                    { t: "Douleur rotule", r: "Possible Syndrome fémoro-patellaire." }
+                ]
+            }
+        };
+
         const modelViewer = document.querySelector("#model");
-        
-        // On écoute les clics sur tout le modèle
-        modelViewer.addEventListener("click", (event) => {
-            const dataset = event.target.dataset;
-            
-            // Si on a cliqué sur un élément qui a un "data-id" (nos hotspots)
-            if (dataset.id) {
-                // 1. Arrêter la rotation
+        const hotspots = document.querySelectorAll(".hotspot");
+
+        hotspots.forEach(hotspot => {
+            // Écoute spécifique pour les hotspots 3D
+            hotspot.addEventListener("click", () => {
+                const id = hotspot.getAttribute("data-id");
+                
+                // 1. Stop rotation
                 modelViewer.autoRotate = false;
                 
-                // 2. Appeler la fonction d'affichage (située dans script.js)
-                if (window.selectZone) {
-                    window.selectZone(dataset.id);
-                }
-            }
+                // 2. Affichage
+                document.getElementById('intro').style.display = 'none';
+                document.getElementById('result').style.display = 'none';
+                document.getElementById('question-card').style.display = 'block';
+                document.getElementById('part-title').innerText = data[id].nom;
+                
+                const container = document.getElementById('options');
+                container.innerHTML = ''; 
+
+                data[id].choix.forEach(item => {
+                    const btn = document.createElement('button');
+                    btn.className = 'opt-btn';
+                    btn.innerHTML = item.t;
+                    btn.onclick = () => {
+                        const res = document.getElementById('result');
+                        res.innerHTML = "<strong>Analyse :</strong> " + item.r;
+                        res.style.display = 'block';
+                    };
+                    container.appendChild(btn);
+                });
+            });
         });
     </script>
-    <script src="script.js"></script>
 </body>
 </html>
