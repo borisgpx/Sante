@@ -1,41 +1,81 @@
-// On attend que toute la page soit chargée avant de lancer le script
 window.onload = function() {
-    console.log("Le script est bien lancé !");
-
     const data = {
-        genou: {
-            nom: "Le Genou",
+        cervicales: {
+            nom: "Cou (Cervicales)",
             choix: [
-                { t: "Douleur externe en courant", r: "Possible <strong>Syndrome de l'essuie-glace</strong>." },
-                { t: "Douleur sous la rotule (escaliers)", r: "Possible <strong>Syndrome fémoro-patellaire</strong>." }
+                { t: "Douleur liée à l'usure ou coup du lapin", r: "Possible <strong>Arthrose ou Entorse cervicale</strong>." },
+                { t: "Douleur liée à la posture", r: "Évoque une <strong>Tendinite des scalènes</strong>." },
+                { t: "Torticolis ou maux de tête de tension", r: "Possible <strong>Contracture des Trapèzes</strong>." }
+            ]
+        },
+        epaule: {
+            nom: "Épaule",
+            choix: [
+                { t: "Blocage, usure ou luxation", r: "Possible <strong>Capsulite, Arthrose ou Luxation</strong>." },
+                { t: "Douleur au mouvement (coiffe des rotateurs)", r: "Évoque une <strong>Tendinite ou Calcification</strong>." },
+                { t: "Point douloureux sous l'omoplate", r: "Possible <strong>Contracture du Deltoïde</strong>." }
+            ]
+        },
+        coude: {
+            nom: "Coude",
+            choix: [
+                { t: "Gonflement ou entorse du ligament", r: "Possible <strong>Arthrite ou Entorse</strong>." },
+                { t: "Douleur externe ou interne", r: "Évoque une <strong>Épicondylite ou Épitrochléite</strong>." },
+                { t: "Tension musculaire avant-bras", r: "Lien avec les <strong>muscles extenseurs/fléchisseurs</strong>." }
+            ]
+        },
+        poignet: {
+            nom: "Poignet & Main",
+            choix: [
+                { t: "Douleur pouce ou doigts", r: "Possible <strong>Rizarthrose ou Kyste</strong>." },
+                { t: "Blocage de gaine ou bord du poignet", r: "Évoque une <strong>Ténosynovite de De Quervain</strong>." },
+                { t: "Fourmillements ou fatigue musculaire", r: "Possible <strong>Canal carpien</strong>." }
+            ]
+        },
+        dos: {
+            nom: "Dos (Lombaires)",
+            choix: [
+                { t: "Hernie, pincement ou spondylarthrite", r: "Analyse : <strong>Hernie discale ou pincement</strong>." },
+                { t: "Douleur le long de la colonne", r: "Possible <strong>Tendinite des Érecteurs du rachis</strong>." },
+                { t: "Lumbago ou fatigue posturale", r: "Évoque une <strong>Contracture des Carrés des lombes</strong>." }
+            ]
+        },
+        hanche: {
+            nom: "Hanche",
+            choix: [
+                { t: "Douleur à l'aine ou au côté", r: "Possible <strong>Coxarthrose ou Bursite</strong>." },
+                { t: "Douleur profonde (Fessier/Psoas)", r: "Évoque une <strong>Tendinite du Moyen Fessier</strong>." },
+                { t: "Douleur à la fesse ou adducteurs", r: "Possible <strong>Syndrome du Piriforme</strong>." }
+            ]
+        },
+        genou: {
+            nom: "Genou",
+            choix: [
+                { t: "Ménisque, croisés ou arthrose", r: "Analyse : <strong>Lésion ou Gonarthrose</strong>." },
+                { t: "Essuie-glace, patte d'oie ou rotule", r: "Évoque une <strong>Tendinite Patellaire</strong>." },
+                { t: "Déchirure ou claquage musculaire", r: "Possible <strong>Lésion des Ischio/Quadriceps</strong>." }
             ]
         },
         cheville: {
-            nom: "La Cheville",
+            nom: "Cheville & Pied",
             choix: [
-                { t: "Torsion brutale + gonflement", r: "Suspicion d'<strong>Entorse</strong> ou <strong>Fracture</strong>." },
-                { t: "Douleur derrière (Tendon d'Achille)", r: "Possible <strong>Tendinite</strong> ou <strong>Rupture</strong>." },
-                { t: "Douleur matinale / Raideur", r: "Possible <strong>Arthrose</strong> ou <strong>Arthrite</strong>." }
+                { t: "Entorse, usure ou Hallux Valgus", r: "Possible <strong>Entorse ou Arthrose</strong>." },
+                { t: "Douleur Achille ou avant du pied", r: "Évoque une <strong>Tendinite d'Achille</strong>." },
+                { t: "Déchirure mollet ou crampes", r: "Possible <strong>Aponévrosite plantaire</strong>." }
             ]
         }
     };
 
     function selectZone(id) {
-        console.log("Zone cliquée : " + id);
-        
-        // Cacher l'intro et le résultat précédent
         document.getElementById('intro').style.display = 'none';
         document.getElementById('result').style.display = 'none';
-        
-        // Afficher la carte des questions
         const card = document.getElementById('question-card');
         card.style.display = 'block';
         document.getElementById('part-title').innerText = data[id].nom;
         
         const optionsContainer = document.getElementById('options');
-        optionsContainer.innerHTML = ''; // On vide les boutons précédents
+        optionsContainer.innerHTML = ''; 
 
-        // Créer les boutons pour chaque option
         data[id].choix.forEach(item => {
             const btn = document.createElement('button');
             btn.innerHTML = item.t;
@@ -48,14 +88,9 @@ window.onload = function() {
         });
     }
 
-    // On lie les clics aux éléments HTML
-    const genouBtn = document.getElementById('zone-genou');
-    const chevilleBtn = document.getElementById('zone-cheville');
-
-    if(genouBtn) {
-        genouBtn.onclick = () => selectZone('genou');
-    }
-    if(chevilleBtn) {
-        chevilleBtn.onclick = () => selectZone('cheville');
-    }
+    // Association automatique des clics
+    Object.keys(data).forEach(id => {
+        const element = document.getElementById('zone-' + id);
+        if(element) element.onclick = () => selectZone(id);
+    });
 };
