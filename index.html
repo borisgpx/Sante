@@ -2,79 +2,136 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <title>Analyseur de Pathologies 3D</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body { margin: 0; font-family: sans-serif; background: #121212; color: white; display: flex; height: 100vh; }
-        .panel { width: 350px; padding: 20px; background: #1e1e1e; border-right: 2px solid #333; z-index: 10; }
-        model-viewer { flex: 1; background: #000; --proxy-z-index: 1; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f0f0f; color: white; display: flex; height: 100vh; overflow: hidden; }
         
-        /* LA CLÉ : On force les boutons à être cliquables au-dessus de tout */
+        /* Panneau de diagnostic à gauche */
+        .panel { width: 400px; padding: 30px; background: #1a1a1a; border-right: 1px solid #333; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 10; overflow-y: auto; }
+        
+        /* Modèle 3D à droite - On lui donne toute la place */
+        model-viewer { flex: 1; background: radial-gradient(#2c3e50, #000000); --progress-bar-color: #007bff; }
+
+        /* Points rouges Pro */
         .hotspot {
-            width: 30px; height: 30px;
-            border-radius: 50%; border: 4px solid white;
-            background: #ff0000;
-            cursor: pointer;
-            pointer-events: auto; /* Force la détection du clic */
-            display: block;
+            width: 22px; height: 22px; border-radius: 50%; border: 3px solid white;
+            background: #ff4757; cursor: pointer; pointer-events: auto;
+            box-shadow: 0 0 10px #ff4757; transition: transform 0.2s;
+        }
+        .hotspot:hover { transform: scale(1.3); background: #ff0000; }
+
+        /* Design des boutons de questions */
+        .opt-btn { 
+            background: #2d2d2d; color: #e0e0e0; border: 1px solid #444; 
+            padding: 15px; width: 100%; margin: 8px 0; border-radius: 8px; 
+            cursor: pointer; text-align: left; font-size: 14px; transition: 0.2s;
+        }
+        .opt-btn:hover { background: #3d3d3d; border-color: #007bff; color: white; }
+
+        /* Boîte de résultat */
+        .result { 
+            background: #0d2d1b; color: #81c784; padding: 20px; 
+            margin-top: 20px; border-radius: 10px; border-left: 5px solid #2ed573; 
+            display: none; line-height: 1.5;
         }
 
-        .opt-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; width: 100%; margin: 5px 0; cursor: pointer; text-align: left; }
-        .result { background: #0d3d20; padding: 15px; margin-top: 15px; border-radius: 8px; display: none; }
+        h2 { color: #007bff; margin-top: 0; }
+        p { color: #aaa; line-height: 1.6; }
     </style>
 </head>
 <body>
 
     <div class="panel">
-        <div id="intro"><h2>Assistant 3D</h2><p>Cliquez sur un point rouge.</p></div>
+        <div id="intro">
+            <h2>Assistant Orthopédique</h2>
+            <p>Faites pivoter le modèle 3D et cliquez sur un point rouge pour identifier une pathologie potentielle.</p>
+        </div>
+        
         <div id="card" style="display:none">
-            <h2 id="title" style="color:#4da3ff"></h2>
+            <h2 id="title"></h2>
+            <p>Quel symptôme ressentez-vous ?</p>
             <div id="options"></div>
             <div id="res" class="result"></div>
         </div>
     </div>
 
-    <model-viewer id="mv" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" camera-controls auto-rotate>
+    <model-viewer id="mv" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+        camera-controls auto-rotate shadow-intensity="1" exposure="0.8" camera-orbit="0deg 75deg 105%">
+        
         <button class="hotspot" slot="hotspot-1" data-zone="cervicales" data-position="0m 1.75m 0.15m" data-normal="0m 0m 1m"></button>
-        <button class="hotspot" slot="hotspot-2" data-zone="dos" data-position="0m 1.2m -0.2m" data-normal="0m 0m -1m"></button>
+        <button class="hotspot" slot="hotspot-2" data-zone="epaule" data-position="-0.3m 1.55m 0.1m" data-normal="0m 0m 1m"></button>
+        <button class="hotspot" slot="hotspot-3" data-zone="coude" data-position="-0.45m 1.25m 0.1m" data-normal="0m 0m 1m"></button>
+        <button class="hotspot" slot="hotspot-4" data-zone="poignet" data-position="-0.55m 0.95m 0.1m" data-normal="0m 0m 1m"></button>
+        <button class="hotspot" slot="hotspot-5" data-zone="dos" data-position="0m 1.2m -0.2m" data-normal="0m 0m -1m"></button>
+        <button class="hotspot" slot="hotspot-6" data-zone="hanche" data-position="0.15m 1m 0.15m" data-normal="0m 0m 1m"></button>
+        <button class="hotspot" slot="hotspot-7" data-zone="genou" data-position="0.18m 0.55m 0.2m" data-normal="0m 0m 1m"></button>
+        <button class="hotspot" slot="hotspot-8" data-zone="cheville" data-position="0.18m 0.15m 0.15m" data-normal="0m 0m 1m"></button>
+
     </model-viewer>
 
     <script>
         const data = {
-            cervicales: { n: "Cou", q: "Douleur cou ?", r: "Analyse cervicale terminée." },
-            dos: { n: "Dos", q: "Douleur dos ?", r: "Analyse lombaire terminée." }
+            cervicales: { n: "Cou (Cervicales)", choix: [
+                { t: "Douleur usure / coup du lapin", r: "Possible Arthrose ou Entorse cervicale." },
+                { t: "Torticolis", r: "Possible Contracture des Trapèzes." }
+            ]},
+            epaule: { n: "Épaule", choix: [
+                { t: "Douleur au mouvement", r: "Possible Tendinite de la coiffe des rotateurs." },
+                { t: "Épaule bloquée", r: "Évoque une Capsulite rétractile." }
+            ]},
+            coude: { n: "Coude", choix: [
+                { t: "Douleur externe (Tennis Elbow)", r: "Possible Épicondylite." }
+            ]},
+            poignet: { n: "Poignet & Main", choix: [
+                { t: "Fourmillements doigts", r: "Possible Canal carpien." }
+            ]},
+            dos: { n: "Dos (Lombaires)", choix: [
+                { t: "Douleur vive brutale", r: "Possible Lumbago." },
+                { t: "Douleur descendant dans la jambe", r: "Possible Sciatique." }
+            ]},
+            hanche: { n: "Hanche", choix: [
+                { t: "Douleur à l'aine", r: "Possible Coxarthrose." }
+            ]},
+            genou: { n: "Genou", choix: [
+                { t: "Douleur sous la rotule", r: "Possible Syndrome fémoro-patellaire." },
+                { t: "Douleur externe en courant", r: "Syndrome de l'essuie-glace." }
+            ]},
+            cheville: { n: "Cheville & Pied", choix: [
+                { t: "Torsion brutale", r: "Possible Entorse." },
+                { t: "Douleur talon / matin", r: "Possible Aponévrosite plantaire." }
+            ]}
         };
 
-        // On cible tous les boutons avec la classe hotspot
+        const modelViewer = document.querySelector("#mv");
+
         document.querySelectorAll('.hotspot').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Empêche le clic de traverser vers le modèle 3D
                 e.stopPropagation(); 
-                
                 const zoneId = btn.getAttribute('data-zone');
                 const info = data[zoneId];
 
-                // Stop rotation
-                document.querySelector('#mv').autoRotate = false;
+                modelViewer.autoRotate = false;
 
-                // Affichage
                 document.getElementById('intro').style.display = 'none';
                 document.getElementById('card').style.display = 'block';
                 document.getElementById('title').innerText = info.n;
                 document.getElementById('res').style.display = 'none';
                 
-                const opt = document.getElementById('options');
-                opt.innerHTML = '';
-                const b = document.createElement('button');
-                b.className = 'opt-btn';
-                b.innerText = info.q;
-                b.onclick = () => {
-                    const rDiv = document.getElementById('res');
-                    rDiv.innerHTML = info.r;
-                    rDiv.style.display = 'block';
-                };
-                opt.appendChild(b);
-                
-                console.log("Clic détecté sur : " + zoneId);
+                const optContainer = document.getElementById('options');
+                optContainer.innerHTML = '';
+
+                info.choix.forEach(item => {
+                    const b = document.createElement('button');
+                    b.className = 'opt-btn';
+                    b.innerText = item.t;
+                    b.onclick = () => {
+                        const rDiv = document.getElementById('res');
+                        rDiv.innerHTML = "<strong>Analyse :</strong> " + item.r;
+                        rDiv.style.display = 'block';
+                    };
+                    optContainer.appendChild(b);
+                });
             });
         });
     </script>
