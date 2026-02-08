@@ -8,25 +8,45 @@
 </head>
 <body>
     <div class="app-container">
-<model-viewer id="model" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
-    camera-controls auto-rotate shadow-intensity="1" 
-    exposure="1" interaction-prompt="none">
-    
-    <button class="hotspot" slot="hotspot-1" data-id="cervicales" data-position="0m 1.75m 0.1m" data-normal="0m 0m 1m"></button>
-    <button class="hotspot" slot="hotspot-2" data-id="dos" data-position="0m 1.2m -0.2m" data-normal="0m 0m -1m"></button>
-    <button class="hotspot" slot="hotspot-3" data-id="genou" data-position="0.15m 0.5m 0.15m" data-normal="0m 0m 1m"></button>
-    
-</model-viewer>
-
         <div class="content-panel">
-            <div id="intro"><h3>Manipulez le modèle et cliquez sur les points</h3></div>
+            <div id="intro"><h3>Cliquez sur un point rouge sur le modèle</h3></div>
             <div id="question-card" style="display:none">
                 <h2 id="part-title"></h2>
                 <div id="options"></div>
             </div>
             <div id="result" class="result-box" style="display:none"></div>
         </div>
+
+        <model-viewer id="model" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+            camera-controls auto-rotate shadow-intensity="1" 
+            exposure="1" interaction-prompt="none">
+            
+            <button class="hotspot" slot="hotspot-cervicales" data-id="cervicales" data-position="0m 1.75m 0.1m" data-normal="0m 0m 1m"></button>
+            <button class="hotspot" slot="hotspot-dos" data-id="dos" data-position="0m 1.2m -0.2m" data-normal="0m 0m -1m"></button>
+            <button class="hotspot" slot="hotspot-genou" data-id="genou" data-position="0.15m 0.5m 0.15m" data-normal="0m 0m 1m"></button>
+        </model-viewer>
     </div>
+
+    <script>
+        // Ce script gère le clic et l'arrêt de la rotation
+        const modelViewer = document.querySelector("#model");
+        
+        // On écoute les clics sur tout le modèle
+        modelViewer.addEventListener("click", (event) => {
+            const dataset = event.target.dataset;
+            
+            // Si on a cliqué sur un élément qui a un "data-id" (nos hotspots)
+            if (dataset.id) {
+                // 1. Arrêter la rotation
+                modelViewer.autoRotate = false;
+                
+                // 2. Appeler la fonction d'affichage (située dans script.js)
+                if (window.selectZone) {
+                    window.selectZone(dataset.id);
+                }
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
