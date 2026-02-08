@@ -1,27 +1,74 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyseur de Douleurs</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="app-container">
-        <div class="image-container">
-            <img src="https://assets.anatomy4sculptors.com/2022/01/ecorche-human-male-body-with-muscles-anatomy-for-artists-by-anatomy-for-sculptors_1024x1024.jpg" class="main-img">
-            <div id="zone-genou" class="hotspot" title="Genou"></div>
-            <div id="zone-cheville" class="hotspot" title="Cheville"></div>
-        </div>
-        <div class="content-panel">
-            <div id="intro"><h3>Cliquez sur une zone rouge</h3></div>
-            <div id="question-card" style="display:none">
-                <h2 id="part-title"></h2>
-                <div id="options"></div>
-            </div>
-            <div id="result" class="result-box" style="display:none"></div>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #f0f2f5; 
+    display: flex; 
+    justify-content: center; 
+    padding: 20px; 
+    margin: 0;
+}
+
+.app-container { 
+    background: white; 
+    padding: 30px; 
+    display: flex; 
+    flex-direction: row; /* Aligne image et texte côte à côte */
+    gap: 40px; 
+    border-radius: 15px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+    max-width: 900px;
+}
+
+.image-container { 
+    position: relative; /* TRÈS IMPORTANT pour les points rouges */
+    width: 350px; 
+}
+
+.main-img { 
+    width: 100%; 
+    display: block;
+    border-radius: 8px; 
+}
+
+.hotspot { 
+    position: absolute; 
+    background: rgba(255, 0, 0, 0.5); /* Rouge semi-transparent */
+    border: 2px solid #ff0000;
+    border-radius: 50%; 
+    cursor: pointer; 
+    z-index: 10; /* Force l'affichage PAR-DESSUS l'image */
+    transition: transform 0.2s;
+}
+
+.hotspot:hover {
+    transform: scale(1.3);
+    background: rgba(255, 0, 0, 0.8);
+}
+
+/* Positions précises */
+#zone-genou { top: 64%; left: 42%; width: 25px; height: 25px; }
+#zone-cheville { top: 85%; left: 45%; width: 20px; height: 20px; }
+
+.content-panel { width: 300px; }
+
+button { 
+    display: block; 
+    width: 100%; 
+    margin: 10px 0; 
+    padding: 12px; 
+    cursor: pointer; 
+    background: #ffffff; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    text-align: left;
+    font-size: 14px;
+}
+
+button:hover { background: #eef6ff; border-color: #3498db; }
+
+.result-box { 
+    margin-top: 20px; 
+    padding: 15px; 
+    background: #e8f5e9; 
+    border-left: 5px solid #4caf50; 
+    border-radius: 4px; 
+}
