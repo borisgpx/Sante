@@ -71,7 +71,8 @@ button:hover { background: #eef6ff; border-color: #3498db; }
     background: #e8f5e9; 
     border-left: 5px solid #4caf50; 
     border-radius: 4px; 
-    #zone-cervicales { top: 11%; left: 47%; width: 20px; height: 20px; }
+
+#zone-cervicales { top: 11%; left: 47%; width: 20px; height: 20px; }
 #zone-epaule { top: 16%; left: 34%; width: 25px; height: 25px; }
 #zone-coude { top: 32%; left: 24%; width: 20px; height: 20px; }
 #zone-poignet { top: 48%; left: 16%; width: 20px; height: 20px; }
