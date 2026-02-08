@@ -1,19 +1,27 @@
-<div class="app-container">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Assistant Douleurs</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
         <div class="image-container">
             <img src="https://assets.anatomy4sculptors.com/2022/01/ecorche-human-male-body-with-muscles-anatomy-for-artists-by-anatomy-for-sculptors_1024x1024.jpg" class="main-img">
             
-            <div id="zone-genou" class="hotspot" title="Genou"></div>
-            <div id="zone-cheville" class="hotspot" title="Cheville"></div>
-            <div id="zone-cervicales" class="hotspot" title="Cou"></div>
-            <div id="zone-epaule" class="hotspot" title="Épaule"></div>
-            <div id="zone-coude" class="hotspot" title="Coude"></div>
-            <div id="zone-poignet" class="hotspot" title="Poignet"></div>
-            <div id="zone-dos" class="hotspot" title="Bas du dos"></div>
-            <div id="zone-hanche" class="hotspot" title="Hanche"></div>
+            <div id="zone-cervicales" class="hotspot"></div>
+            <div id="zone-epaule" class="hotspot"></div>
+            <div id="zone-coude" class="hotspot"></div>
+            <div id="zone-poignet" class="hotspot"></div>
+            <div id="zone-dos" class="hotspot"></div>
+            <div id="zone-hanche" class="hotspot"></div>
+            <div id="zone-genou" class="hotspot"></div>
+            <div id="zone-cheville" class="hotspot"></div>
         </div>
 
         <div class="content-panel">
-            <div id="intro"><h3>Cliquez sur une zone rouge</h3></div>
+            <div id="intro"><h3>Cliquez sur une zone du corps</h3></div>
             <div id="question-card" style="display:none">
                 <h2 id="part-title"></h2>
                 <div id="options"></div>
@@ -21,3 +29,6 @@
             <div id="result" class="result-box" style="display:none"></div>
         </div>
     </div>
+    <script src="script.js"></script>
+</body>
+</html>
